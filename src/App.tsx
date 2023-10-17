@@ -12,7 +12,7 @@ interface ICar extends IDataObject {
 const App: React.FC = () => {
   useEffect(() => {
     const db = new Database("retrospective2");
-    const Person = db.create<IPerson>("/users");
+    const Person = db.define<IPerson>("/users");
     const data = Person.findAll();
     // const person = Person.insert({
     //   age: 123,
@@ -20,7 +20,7 @@ const App: React.FC = () => {
     //   lastname: "Starfish",
     // });
     // const persons = Person.findAll();
-    const Car = db.create<ICar>("cars");
+    const Car = db.define<ICar>("cars");
     const cars = Car.findAll();
     debugger;
     // Car.insert({ name: "BMW", power: 200 });

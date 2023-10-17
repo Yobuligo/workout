@@ -13,7 +13,7 @@ export class Database implements IDatabase {
     this.fileName = `db.${name}`;
   }
 
-  create<T extends IDataObject>(name: string): IDataAccessObject<T> {
+  define<T extends IDataObject>(name: string): IDataAccessObject<T> {
     const tableFileName = `${this.fileName}.${name}`;
     const autoIncrement = new AutoIncrement(this.fileName, tableFileName);
     return new DataAccessObject(name, tableFileName, autoIncrement);
