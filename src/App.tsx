@@ -1,31 +1,34 @@
-import React, { useEffect } from "react";
+import React, { useState } from "react";
 import "./App.css";
-import { IDataObject } from "./localStorage/dataObject/IDataObject";
+import { TodoList } from "./feature/TodoList";
+import { IDataObjectDetails } from "./localStorage/dataObject/IDataObjectDetails";
 import { Database } from "./localStorage/database/Database";
-import { eq, gt } from "./localStorage/filter/Operator";
-import { IPerson } from "./localStorage/localStorage";
+import { ITodo } from "./model/ITodo";
 
-interface ICar extends IDataObject {
-  name: string;
-  power: number;
-}
+const db = new Database("todos");
+const Todo = db.define<ITodo>("todos");
+
 
 const App: React.FC = () => {
-  useEffect(() => {
-    const db = new Database("retrospective2");
-    const Person = db.define<IPerson>("/users");
-    let data = Person.findAll();
-    Person.deleteAll({ firstname: eq("Peter"), id: gt(6) });
-    // Person.insert({ age: 28, firstname: "Stacey", lastname: "Starfish" });
-    // data = Person.findAll();
-    // data = Person.findAll({ firstname: eq("Peter") });
-    // Person.insert({ age: 28, firstname: "Alex", lastname: "Ant" });
-    // data = Person.findAll();
-    debugger;
-    // Car.insert({ name: "BMW", power: 200 });
-  }, []);
+  const [todos, setTodos] = useState<ITodo[]>(Todo.findAll());
 
-  return <>Hello World</>;
+  const onAdd = (todo: IDataObjectDetails<ITodo>) => {
+    const newTodo = Todo.insert(todo);
+    setTodos((previous) => [...previous, newTodo]);
+  };
+
+  const onDelete = (todo: ITodo) => {
+    Todo.delete(todo);
+    setTodos((previous) => [
+      ...previous.filter((value) => value.id !== todo.id),
+    ]);
+  };
+
+  return (
+    <>
+      <TodoList todos={todos} onAdd={onAdd} onDelete={onDelete} />
+    </>
+  );
 };
 
 export default App;

@@ -2,9 +2,13 @@ import { IAutoIncrement } from "../autoIncrement/IAutoIncrement";
 import { IDataObject } from "../dataObject/IDataObject";
 import { IDataObjectDetails } from "../dataObject/IDataObjectDetails";
 import { IFilter } from "../filter/IFilter";
-import { deleteItems, filterItems } from "../filter/filterItems";
-import { readLocalStorage } from "../utils/readLocalStorage";
-import { writeLocalStorage } from "../utils/writeLocalStorage";
+import {
+  doesMatchFilter,
+  filterItems,
+  reduceItems,
+  updateItem,
+} from "../filter/filterItems";
+import { IStorage } from "../storage/IStorage";
 import { IDataAccessObject } from "./IDataAccessObject";
 
 export class DataAccessObject<T extends IDataObject>
@@ -12,7 +16,7 @@ export class DataAccessObject<T extends IDataObject>
 {
   constructor(
     readonly name: string,
-    readonly fileName: string,
+    private storage: IStorage<T>,
     private autoIncrement: IAutoIncrement
   ) {}
 
@@ -22,15 +26,15 @@ export class DataAccessObject<T extends IDataObject>
 
   deleteAll(filter?: IFilter<T> | undefined): boolean {
     if (!filter) {
-      writeLocalStorage<T[]>(this.fileName, []);
+      this.storage.write([]);
       return true;
     }
 
     let items = this.findAll();
     const length = items.length;
     if (length > 0) {
-      items = deleteItems(items, filter);
-      writeLocalStorage(this.fileName, items);
+      items = reduceItems(items, filter);
+      this.storage.write(items);
       return items.length !== length;
     }
 
@@ -49,11 +53,12 @@ export class DataAccessObject<T extends IDataObject>
     }
 
     items.splice(index, 1);
+    this.storage.write(items);
     return true;
   }
 
   findAll(filter?: IFilter<T>): T[] {
-    let items = readLocalStorage<T[]>(this.fileName) ?? [];
+    let items = this.storage.read();
     if (filter) {
       items = filterItems(items, filter);
     }
@@ -80,13 +85,38 @@ export class DataAccessObject<T extends IDataObject>
     return newItem;
   }
 
-  update(dataObject: T): T {
-    throw new Error("Method not implemented.");
+  update(dataObject: T): boolean {
+    const items = this.findAll();
+    const index = items.findIndex((item) => item.id === dataObject.id);
+    if (index === -1) {
+      return false;
+    }
+
+    items.splice(index, 1, dataObject);
+    this.storage.write(items);
+    return true;
+  }
+
+  updateAll(
+    dataObject: Partial<IDataObjectDetails<T>>,
+    filter?: IFilter<T> | undefined
+  ): number {
+    let count = 0;
+    const items = this.findAll();
+    items.forEach((item) => {
+      if (!filter || doesMatchFilter(item, filter)) {
+        if (updateItem(item, dataObject)) {
+          count++;
+        }
+      }
+    });
+    this.storage.write(items);
+    return count;
   }
 
   private append(dataObject: T) {
     const items = this.findAll();
     items.push(dataObject);
-    writeLocalStorage(this.fileName, items);
+    this.storage.write(items);
   }
 }

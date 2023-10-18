@@ -1,0 +1,8 @@
+{
+    "appId": "com.yobuligo.todo",
+    "appName": "todo",
+    "bundledWebRuntime": false,
+    "npmClient": "npm",
+    "webDir": "build",
+    "cordova": {}
+}

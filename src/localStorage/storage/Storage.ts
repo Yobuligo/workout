@@ -2,7 +2,7 @@ import { readLocalStorage } from "../utils/readLocalStorage";
 import { writeLocalStorage } from "../utils/writeLocalStorage";
 import { IStorage } from "./IStorage";
 
-export class Storage<T> implements IStorage<T> {
+export class LocalStorage<T> implements IStorage<T> {
   constructor(private readonly key: string) {}
 
   read(): T[] {

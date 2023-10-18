@@ -1,10 +1,8 @@
 import { IDataObject } from "../dataObject/IDataObject";
 import { IDataObjectDetails } from "../dataObject/IDataObjectDetails";
 import { IFilter } from "../filter/IFilter";
-import { IHaveFileName } from "../types/IHaveFileName";
 
-export interface IDataAccessObject<T extends IDataObject>
-  extends IHaveFileName {
+export interface IDataAccessObject<T extends IDataObject> {
   readonly name: string;
   delete(dataObject: T): boolean;
   deleteAll(filter?: IFilter<T>): boolean;
@@ -13,5 +11,9 @@ export interface IDataAccessObject<T extends IDataObject>
   findById(id: number): T | undefined;
   findFirst(filter?: IFilter<T>): T | undefined;
   insert(dataObject: IDataObjectDetails<T>): T;
-  update(dataObject: T): T;
+  update(dataObject: T): boolean;
+  updateAll(
+    dataObject: Partial<IDataObjectDetails<T>>,
+    filter?: IFilter<T>
+  ): number;
 }
