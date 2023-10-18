@@ -3,6 +3,7 @@ import { IDataObject } from "../dataObject/IDataObject";
 import { IDataObjectDetails } from "../dataObject/IDataObjectDetails";
 import { IFilter } from "../filter/IFilter";
 import {
+  deleteItems,
   doesMatchFilter,
   filterItems,
   reduceItems,
@@ -38,7 +39,11 @@ export class DataAccessObject<T extends IDataObject>
   delete(dataObjects: T[]): boolean;
   delete(dataObjects: unknown): boolean {
     if (Array.isArray(dataObjects)) {
-      return Todo();
+      let items = this.findAll();
+      const length = items.length;
+      items = deleteItems(items, dataObjects);
+      this.storage.write(items);
+      return items.length !== length;
     } else {
       const dataObject = dataObjects as T;
       return this.deleteById(dataObject.id);

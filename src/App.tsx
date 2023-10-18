@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./App.css";
 import { TodoList } from "./feature/TodoList";
 import { IDataObjectDetails } from "./localStorage/dataObject/IDataObjectDetails";
@@ -7,7 +7,6 @@ import { ITodo } from "./model/ITodo";
 
 const db = new Database("todos");
 const Todo = db.define<ITodo>("todos");
-
 
 const App: React.FC = () => {
   const [todos, setTodos] = useState<ITodo[]>(Todo.findAll());
@@ -24,9 +23,20 @@ const App: React.FC = () => {
     ]);
   };
 
+  useEffect(() => {
+    const first = Todo.first()!;
+    const last = Todo.last()!;
+    // Todo.delete([first, last])
+    Todo.insert([])
+    console.log("done")
+  }, []);
+
   return (
     <>
-      <TodoList todos={todos} onAdd={onAdd} onDelete={onDelete} />
+      <div>Amount: {Todo.count()}</div>
+      <div>
+        <TodoList todos={todos} onAdd={onAdd} onDelete={onDelete} />
+      </div>
     </>
   );
 };

@@ -1,4 +1,5 @@
 import { error } from "../../utils/error/error";
+import { IDataObject } from "../dataObject/IDataObject";
 import { IFilter } from "./IFilter";
 
 export const filterItems = <T>(items: T[], filter: IFilter<T>): T[] => {
@@ -7,6 +8,15 @@ export const filterItems = <T>(items: T[], filter: IFilter<T>): T[] => {
 
 export const reduceItems = <T>(items: T[], filter: IFilter<T>): T[] => {
   return items.filter((item) => !doesMatchFilter(item, filter));
+};
+
+export const deleteItems = <T extends IDataObject>(
+  items: T[],
+  deleteItems: T[]
+) => {
+  return items.filter(
+    (item) => !deleteItems.find((deleteItem) => deleteItem.id === item.id)
+  );
 };
 
 export const updateItem = <T>(item: T, origin: T): boolean => {
