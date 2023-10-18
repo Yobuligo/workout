@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import "./App.css";
 import { IDataObject } from "./localStorage/dataObject/IDataObject";
 import { Database } from "./localStorage/database/Database";
-import { eq } from "./localStorage/filter/Operator";
+import { eq, gt } from "./localStorage/filter/Operator";
 import { IPerson } from "./localStorage/localStorage";
 
 interface ICar extends IDataObject {
@@ -14,17 +14,13 @@ const App: React.FC = () => {
   useEffect(() => {
     const db = new Database("retrospective2");
     const Person = db.define<IPerson>("/users");
-    const data = Person.findAll({ firstname: eq("Peter") });
-
-    // const person = Person.insert({
-    //   age: 123,
-    //   firstname: "Stacey",
-    //   lastname: "Starfish",
-    // });
-    // const persons = Person.findAll();
-
-    const Car = db.define<ICar>("cars");
-    const cars = Car.findAll();
+    let data = Person.findAll();
+    Person.deleteAll({ firstname: eq("Peter"), id: gt(6) });
+    // Person.insert({ age: 28, firstname: "Stacey", lastname: "Starfish" });
+    // data = Person.findAll();
+    // data = Person.findAll({ firstname: eq("Peter") });
+    // Person.insert({ age: 28, firstname: "Alex", lastname: "Ant" });
+    // data = Person.findAll();
     debugger;
     // Car.insert({ name: "BMW", power: 200 });
   }, []);

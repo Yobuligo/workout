@@ -2,7 +2,7 @@ import { IAutoIncrement } from "../autoIncrement/IAutoIncrement";
 import { IDataObject } from "../dataObject/IDataObject";
 import { IDataObjectDetails } from "../dataObject/IDataObjectDetails";
 import { IFilter } from "../filter/IFilter";
-import { filterItems } from "../filter/filterItems";
+import { deleteItems, filterItems } from "../filter/filterItems";
 import { readLocalStorage } from "../utils/readLocalStorage";
 import { writeLocalStorage } from "../utils/writeLocalStorage";
 import { IDataAccessObject } from "./IDataAccessObject";
@@ -18,6 +18,23 @@ export class DataAccessObject<T extends IDataObject>
 
   delete(dataObject: T): boolean {
     return this.deleteById(dataObject.id);
+  }
+
+  deleteAll(filter?: IFilter<T> | undefined): boolean {
+    if (!filter) {
+      writeLocalStorage<T[]>(this.fileName, []);
+      return true;
+    }
+
+    let items = this.findAll();
+    const length = items.length;
+    if (length > 0) {
+      items = deleteItems(items, filter);
+      writeLocalStorage(this.fileName, items);
+      return items.length !== length;
+    }
+
+    return false;
   }
 
   deleteById(id: number): boolean {

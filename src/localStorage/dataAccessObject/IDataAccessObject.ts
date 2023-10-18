@@ -7,6 +7,7 @@ export interface IDataAccessObject<T extends IDataObject>
   extends IHaveFileName {
   readonly name: string;
   delete(dataObject: T): boolean;
+  deleteAll(filter?: IFilter<T>): boolean;
   deleteById(id: number): boolean;
   findAll(filter?: IFilter<T>): T[];
   findById(id: number): T | undefined;
