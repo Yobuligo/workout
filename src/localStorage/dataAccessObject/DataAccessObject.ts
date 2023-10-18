@@ -9,6 +9,7 @@ import {
   updateItem,
 } from "../filter/filterItems";
 import { IStorage } from "../storage/IStorage";
+import { Todo } from "../utils/Todo";
 import { IDataAccessObject } from "./IDataAccessObject";
 
 export class DataAccessObject<T extends IDataObject>
@@ -20,8 +21,28 @@ export class DataAccessObject<T extends IDataObject>
     private autoIncrement: IAutoIncrement
   ) {}
 
-  delete(dataObject: T): boolean {
-    return this.deleteById(dataObject.id);
+  contains(dataObject: T): boolean {
+    return this.findById(dataObject.id) !== undefined;
+  }
+
+  containsNot(dataObject: T): boolean {
+    return this.findById(dataObject.id) === undefined;
+  }
+
+  count(): number {
+    const items = this.findAll();
+    return items.length;
+  }
+
+  delete(dataObject: T): boolean;
+  delete(dataObjects: T[]): boolean;
+  delete(dataObjects: unknown): boolean {
+    if (Array.isArray(dataObjects)) {
+      return Todo();
+    } else {
+      const dataObject = dataObjects as T;
+      return this.deleteById(dataObject.id);
+    }
   }
 
   deleteAll(filter?: IFilter<T> | undefined): boolean {
@@ -74,27 +95,54 @@ export class DataAccessObject<T extends IDataObject>
     }
   }
 
-  findFirst(filter?: IFilter<T> | undefined): T | undefined {
+  first(filter?: IFilter<T> | undefined): T | undefined {
     return this.findAll(filter)[0];
   }
 
-  insert(dataObject: IDataObjectDetails<T>): T {
-    const id = this.autoIncrement.next();
-    const newItem = { ...dataObject, id } as T;
-    this.append(newItem);
-    return newItem;
+  insert(dataObject: IDataObjectDetails<T>): T;
+  insert(dataObjects: IDataObjectDetails<T>[]): T[];
+  insert(dataObjects: unknown): T | T[] {
+    if (Array.isArray(dataObjects)) {
+      return Todo();
+    } else {
+      const dataObject = dataObjects as IDataObjectDetails<T>;
+      const id = this.autoIncrement.next();
+      const newItem = { ...dataObject, id } as T;
+      this.append(newItem);
+      return newItem;
+    }
   }
 
-  update(dataObject: T): boolean {
-    const items = this.findAll();
-    const index = items.findIndex((item) => item.id === dataObject.id);
-    if (index === -1) {
-      return false;
-    }
+  isEmpty(): boolean {
+    return this.count() === 0;
+  }
 
-    items.splice(index, 1, dataObject);
-    this.storage.write(items);
-    return true;
+  isNotEmpty(): boolean {
+    return this.count() > 0;
+  }
+
+  last(): T | undefined {
+    const items = this.findAll();
+    return items[items.length - 1];
+  }
+
+  update(dataObject: T): boolean;
+  update(dataObjects: T[]): boolean;
+  update(dataObjects: unknown): boolean {
+    if (Array.isArray(dataObjects)) {
+      return Todo();
+    } else {
+      const dataObject = dataObjects as T;
+      const items = this.findAll();
+      const index = items.findIndex((item) => item.id === dataObject.id);
+      if (index === -1) {
+        return false;
+      }
+
+      items.splice(index, 1, dataObject);
+      this.storage.write(items);
+      return true;
+    }
   }
 
   updateAll(
