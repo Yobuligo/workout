@@ -1,8 +1,8 @@
 import { IAutoIncrement } from "../autoIncrement/IAutoIncrement";
 import { IDataObject } from "../dataObject/IDataObject";
 import { IDataObjectDetails } from "../dataObject/IDataObjectDetails";
-import { IFilter } from "../types/IFilter";
-import { Todo } from "../utils/Todo";
+import { IFilter } from "../filter/IFilter";
+import { filterItems } from "../filter/filterItems";
 import { readLocalStorage } from "../utils/readLocalStorage";
 import { writeLocalStorage } from "../utils/writeLocalStorage";
 import { IDataAccessObject } from "./IDataAccessObject";
@@ -17,24 +17,35 @@ export class DataAccessObject<T extends IDataObject>
   ) {}
 
   delete(dataObject: T): boolean {
-    throw new Error("Method not implemented.");
+    return this.deleteById(dataObject.id);
   }
 
   deleteById(id: number): boolean {
-    throw new Error("Method not implemented.");
+    const items = this.findAll();
+    if (items.length === 0) {
+      return false;
+    }
+
+    const index = items.findIndex((item) => item.id === id);
+    if (index === -1) {
+      return false;
+    }
+
+    items.splice(index, 1);
+    return true;
   }
 
-  findAll(): T[] {
-    return readLocalStorage(this.fileName) ?? [];
-  }
-
-  findByFilter(filter?: IFilter<T> | undefined): T[] {
-    return Todo();
+  findAll(filter?: IFilter<T>): T[] {
+    let items = readLocalStorage<T[]>(this.fileName) ?? [];
+    if (filter) {
+      items = filterItems(items, filter);
+    }
+    return items;
   }
 
   findById(id: number): T | undefined {
-    const data = this.findAll();
-    for (const item of data) {
+    const items = this.findAll();
+    for (const item of items) {
       if (item.id === id) {
         return item;
       }
@@ -42,7 +53,7 @@ export class DataAccessObject<T extends IDataObject>
   }
 
   findFirst(filter?: IFilter<T> | undefined): T | undefined {
-    return Todo();
+    return this.findAll(filter)[0];
   }
 
   insert(dataObject: IDataObjectDetails<T>): T {
