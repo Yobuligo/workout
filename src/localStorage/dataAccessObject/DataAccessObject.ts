@@ -27,7 +27,7 @@ export class DataAccessObject<T extends IDataObject>
   }
 
   containsNot(dataObject: T): boolean {
-    return this.findById(dataObject.id) === undefined;
+    return !this.contains(dataObject);
   }
 
   count(): number {
@@ -108,12 +108,19 @@ export class DataAccessObject<T extends IDataObject>
   insert(dataObjects: IDataObjectDetails<T>[]): T[];
   insert(dataObjects: unknown): T | T[] {
     if (Array.isArray(dataObjects)) {
-      return Todo();
+      const newItems: T[] = [];
+      dataObjects as IDataObjectDetails<T>[];
+      dataObjects.forEach((dataObject) => {
+        const id = this.autoIncrement.next();
+        newItems.push({ ...dataObject, id } as T);
+      });
+      this.storage.append(newItems);
+      return newItems;
     } else {
       const dataObject = dataObjects as IDataObjectDetails<T>;
       const id = this.autoIncrement.next();
       const newItem = { ...dataObject, id } as T;
-      this.append(newItem);
+      this.storage.append(newItem);
       return newItem;
     }
   }
@@ -165,11 +172,5 @@ export class DataAccessObject<T extends IDataObject>
     });
     this.storage.write(items);
     return count;
-  }
-
-  private append(dataObject: T) {
-    const items = this.findAll();
-    items.push(dataObject);
-    this.storage.write(items);
   }
 }
