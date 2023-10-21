@@ -154,7 +154,7 @@ export class DataAccessObject<T extends IDataObject>
       }
 
       if (this.needsTimestamps) {
-        (dataObject as any).createdAt = new Date();
+        dataObject.changedAt = new Date();
       }
 
       items.splice(index, 1, dataObject);
@@ -180,7 +180,7 @@ export class DataAccessObject<T extends IDataObject>
     return count;
   }
 
-  private createInsertProps() {
+  private createInsertProps(): IDataObject {
     const id = this.autoIncrement.next();
     if (this.needsTimestamps) {
       return { id, createdAt: new Date(), changedAt: new Date() };

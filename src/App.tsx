@@ -24,11 +24,11 @@ const App: React.FC = () => {
   };
 
   useEffect(() => {
-    const first = Todo.first()!;
-    const last = Todo.last()!;
-    // Todo.delete([first, last])
-    Todo.insert([])
-    console.log("done")
+    const first = Todo.first();
+    if (first) {
+      first.text = "updated text";
+      Todo.update(first);
+    }
   }, []);
 
   return (
