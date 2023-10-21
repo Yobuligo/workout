@@ -12,6 +12,7 @@ import {
 import { IStorage } from "../storage/IStorage";
 import { Todo } from "../utils/Todo";
 import { IDataAccessObject } from "./IDataAccessObject";
+import { IDataAccessObjectConfig } from "./IDataAccessObjectConfig";
 
 export class DataAccessObject<T extends IDataObject>
   implements IDataAccessObject<T>
@@ -19,7 +20,8 @@ export class DataAccessObject<T extends IDataObject>
   constructor(
     readonly name: string,
     private storage: IStorage<T>,
-    private autoIncrement: IAutoIncrement
+    private autoIncrement: IAutoIncrement,
+    private config?: IDataAccessObjectConfig
   ) {}
 
   contains(dataObject: T): boolean {
@@ -111,15 +113,15 @@ export class DataAccessObject<T extends IDataObject>
       const newItems: T[] = [];
       dataObjects as IDataObjectDetails<T>[];
       dataObjects.forEach((dataObject) => {
-        const id = this.autoIncrement.next();
-        newItems.push({ ...dataObject, id } as T);
+        const insertProps = this.createInsertProps();
+        newItems.push({ ...dataObject, ...insertProps } as T);
       });
       this.storage.append(newItems);
       return newItems;
     } else {
       const dataObject = dataObjects as IDataObjectDetails<T>;
-      const id = this.autoIncrement.next();
-      const newItem = { ...dataObject, id } as T;
+      const insertProps = this.createInsertProps();
+      const newItem = { ...dataObject, ...insertProps } as T;
       this.storage.append(newItem);
       return newItem;
     }
@@ -151,6 +153,10 @@ export class DataAccessObject<T extends IDataObject>
         return false;
       }
 
+      if (this.needsTimestamps) {
+        (dataObject as any).createdAt = new Date();
+      }
+
       items.splice(index, 1, dataObject);
       this.storage.write(items);
       return true;
@@ -165,12 +171,27 @@ export class DataAccessObject<T extends IDataObject>
     const items = this.findAll();
     items.forEach((item) => {
       if (!filter || doesMatchFilter(item, filter)) {
-        if (updateItem(item, dataObject)) {
+        if (updateItem(item, dataObject, this.needsTimestamps)) {
           count++;
         }
       }
     });
     this.storage.write(items);
     return count;
+  }
+
+  private createInsertProps() {
+    const id = this.autoIncrement.next();
+    if (this.needsTimestamps) {
+      return { id, createdAt: new Date(), changedAt: new Date() };
+    } else {
+      return { id };
+    }
+  }
+
+  private get needsTimestamps() {
+    return (
+      !this.config || !this.config.timestamps || this.config.timestamps === true
+    );
   }
 }

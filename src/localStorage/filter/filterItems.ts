@@ -41,7 +41,11 @@ export const deleteItems = <T extends IDataObject>(
   );
 };
 
-export const updateItem = <T>(item: T, origin: T): boolean => {
+export const updateItem = <T>(
+  item: T,
+  origin: T,
+  needsTimestamps: boolean
+): boolean => {
   let updated = false;
   for (const prop in origin) {
     if (item[prop] !== origin[prop]) {
@@ -49,6 +53,11 @@ export const updateItem = <T>(item: T, origin: T): boolean => {
       updated = true;
     }
   }
+
+  if (needsTimestamps) {
+    (item as any).changedAt = new Date();
+  }
+
   return updated;
 };
 
