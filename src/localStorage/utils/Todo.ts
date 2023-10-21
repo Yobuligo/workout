@@ -1,3 +1,3 @@
-export const Todo = (): never => {
-  throw new Error();
+export const Todo = (reason?: string): never => {
+  throw new Error(reason);
 };

@@ -109,6 +109,7 @@ export class DataAccessObject<T extends IDataObject>
   insert(dataObject: IDataObjectDetails<T>): T;
   insert(dataObjects: IDataObjectDetails<T>[]): T[];
   insert(dataObjects: unknown): T | T[] {
+    Todo("Add createdAt and Changed At")
     if (Array.isArray(dataObjects)) {
       const newItems: T[] = [];
       dataObjects as IDataObjectDetails<T>[];
@@ -124,7 +125,7 @@ export class DataAccessObject<T extends IDataObject>
       const newItem = { ...dataObject, ...insertProps } as T;
       this.storage.append(newItem);
       return newItem;
-    }
+    }    
   }
 
   isEmpty(): boolean {
