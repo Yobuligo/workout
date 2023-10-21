@@ -52,17 +52,17 @@ interface IOneToMany<TSource extends IDataObject, TTarget extends IDataObject>
   last(dataObject: TSource): TTarget | undefined;
 }
 
-const oneToOne = <
-  TSource extends IDataObject,
-  TTarget extends IDataObject
->(): IOneToOne<TSource, TTarget> => {
+const oneToOne = <TSource extends IDataObject, TTarget extends IDataObject>(
+  sourceDataAccessObject: IDataAccessObject<TSource>,
+  targetDataAccessObject: IDataAccessObject<TTarget>
+): IOneToOne<TSource, TTarget> => {
   throw new Error();
 };
 
-const oneToMany = <
-  TSource extends IDataObject,
-  TTarget extends IDataObject
->(): IOneToMany<TSource, TTarget> => {
+const oneToMany = <TSource extends IDataObject, TTarget extends IDataObject>(
+  sourceDataAccessObject: IDataAccessObject<TSource>,
+  targetDataAccessObject: IDataAccessObject<TTarget>
+): IOneToMany<TSource, TTarget> => {
   throw new Error();
 };
 
@@ -85,8 +85,10 @@ const define = <T extends IDataObject>(name: string): IBuilder<T> => {
   throw new Error();
 };
 
-const Board = define<IBoard>("boards").build({
-  notes: oneToMany<IBoard, INote>(),
+const Note = define<INote>("notes").build()
+
+const Board = define<IBoard>("boards").build((this)=>{
+  notes: oneToMany(this, Note),
 });
 
 const notes = Board.notes.findAll(board);
