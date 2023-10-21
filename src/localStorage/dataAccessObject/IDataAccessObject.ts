@@ -13,12 +13,14 @@ export interface IDataAccessObject<T extends IDataObject> {
   deleteById(id: number): boolean;
   findAll(filter?: IFilter<T>): T[];
   findById(id: number): T | undefined;
-  first(filter?: IFilter<T>): T | undefined;
+  first(filter?: IFilter<T>): T;
+  firstOrNull(filter?: IFilter<T>): T | undefined;
   insert(dataObject: IDataObjectDetails<T>): T;
   insert(dataObjects: IDataObjectDetails<T>[]): T[];
   isEmpty(): boolean;
   isNotEmpty(): boolean;
-  last(): T | undefined;
+  last(): T;
+  lastOrNull(): T | undefined;
   update(dataObject: T): boolean;
   update(dataObjects: T[]): boolean;
   updateAll(

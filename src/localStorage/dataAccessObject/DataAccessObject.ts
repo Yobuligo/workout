@@ -1,3 +1,4 @@
+import { error } from "../../utils/error/error";
 import { IAutoIncrement } from "../autoIncrement/IAutoIncrement";
 import { IDataObject } from "../dataObject/IDataObject";
 import { IDataObjectDetails } from "../dataObject/IDataObjectDetails";
@@ -102,7 +103,14 @@ export class DataAccessObject<T extends IDataObject>
     }
   }
 
-  first(filter?: IFilter<T> | undefined): T | undefined {
+  first(filter?: IFilter<T> | undefined): T {
+    return (
+      this.firstOrNull(filter) ??
+      error(`Error while finding first item. No item available.`)
+    );
+  }
+
+  firstOrNull(filter?: IFilter<T> | undefined): T | undefined {
     return this.findAll(filter)[0];
   }
 
@@ -124,7 +132,7 @@ export class DataAccessObject<T extends IDataObject>
       const newItem = { ...dataObject, ...insertProps } as T;
       this.storage.append(newItem);
       return newItem;
-    }    
+    }
   }
 
   isEmpty(): boolean {
@@ -135,7 +143,14 @@ export class DataAccessObject<T extends IDataObject>
     return this.count() > 0;
   }
 
-  last(): T | undefined {
+  last(): T {
+    return (
+      this.lastOrNull() ??
+      error(`Error while finding last item. No item available.`)
+    );
+  }
+
+  lastOrNull(): T | undefined {
     const items = this.findAll();
     return items[items.length - 1];
   }
