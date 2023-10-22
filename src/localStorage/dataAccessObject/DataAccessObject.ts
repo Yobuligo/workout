@@ -206,7 +206,9 @@ export class DataAccessObject<T extends IDataObject>
 
   private get needsTimestamps() {
     return (
-      !this.config || !this.config.timestamps || this.config.timestamps === true
+      !this.config ||
+      this.config.timestamps === undefined ||
+      this.config.timestamps === true
     );
   }
 }
