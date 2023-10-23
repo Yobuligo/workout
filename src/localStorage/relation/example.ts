@@ -76,8 +76,7 @@ const car: ICar = { id: 123, name: "BMW" };
 const board: IBoard = { id: 123, name: "Sprint Review" };
 
 interface IBuilder<T extends IDataObject> {
-  build<TRelation extends RelationConfig<T>>(
-    config?: TRelation
+  build<TRelation extends RelationConfig<T>>(configure: (dataAccessObject: IDataAccessObject<T>)=>TRelation
   ): IDataAccessObject<T> & TRelation;
 }
 
@@ -85,11 +84,36 @@ const define = <T extends IDataObject>(name: string): IBuilder<T> => {
   throw new Error();
 };
 
-const Note = define<INote>("notes").build()
+// const Note = define<INote>("notes").build()
+// const Note = define<INote>("notes").build((def)=>{
+//     return {
+//         relation: {
+//             notes: def.oneToMany()
+//         }
+//     }
+// })
 
-const Board = define<IBoard>("boards").build((this)=>{
-  notes: oneToMany(this, Note),
-});
+// const Board = define<IBoard>("boards").build((this)=>{
+//   notes: oneToMany(this, Note),
+// });
 
-const notes = Board.notes.findAll(board);
-Board.notes.deleteAll(board, { text: eq("Sprint Review") });
+// Board.findAll()
+// Board.contains(board)
+// Board.notes.findAll(board)
+
+// // Board.notes.findAll()
+// Note.findAll({
+//     boardId: 123
+// })
+
+
+
+// const notes = Board.notes.findAll(board);
+// Board.notes.deleteAll(board, { text: eq("Sprint Review") });
+
+// const Board = define<IBoard>().configure((def)=> {
+//     name: "boards",
+//     relation: {
+//         notes: def.oneToMany(Note)
+//     }
+// })
