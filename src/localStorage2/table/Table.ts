@@ -49,6 +49,18 @@ export class Table<TRecord extends IRecord<IdType>> implements ITable<TRecord> {
     }
   }
 
+  modify(
+    record: IRecordDetails<TRecord>,
+    filter?: IFilter<TRecord> | undefined
+  ): number {
+    const count = this.update(record, filter);
+    if (count === 0) {
+      this.insert(record);
+      return 1;
+    }
+    return count;
+  }
+
   select(filter?: IFilter<TRecord> | undefined): TRecord[] {
     let records = this.storage.read();
     if (filter) {
@@ -74,7 +86,9 @@ export class Table<TRecord extends IRecord<IdType>> implements ITable<TRecord> {
         }
       }
     });
-    this.storage.write(records);
+    if (count > 0) {
+      this.storage.write(records);
+    }
     return count;
   }
 

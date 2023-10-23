@@ -11,6 +11,7 @@ export interface ITable<TRecord extends IRecord<any>> {
   delete(filter?: IFilter<TRecord>): void;
   insert(record: IRecordDetails<TRecord>): TRecord;
   insert(records: IRecordDetails<TRecord>[]): TRecord[];
+  modify(record: IRecordDetails<TRecord>, filter?: IFilter<TRecord>): number;
   select(filter?: IFilter<TRecord>): TRecord[];
   selectSingle(filter?: IFilter<TRecord>): TRecord | undefined;
   update(
