@@ -28,18 +28,9 @@ export class Table<TRecord extends IRecord<IdType>> implements ITable<TRecord> {
   insert(records: IRecordDetails<TRecord>[]): TRecord[];
   insert(records: unknown): TRecord | TRecord[] {
     if (Array.isArray(records)) {
-      const newRecords: TRecord[] = [];
-      const recordDetails = records as IRecordDetails<TRecord>[];
-      recordDetails.forEach((recordDetails) => {
-        const newRecord = this.createRecord(recordDetails);
-        newRecords.push(newRecord);
-      });
-      this.storage.append(newRecords);
-      return newRecords;
+      return this.insertRecords(records as IRecordDetails<TRecord>[]);
     } else {
-      const newRecord = this.createRecord(records as IRecordDetails<TRecord>);
-      this.storage.append(newRecord);
-      return newRecord;
+      return this.insertRecord(records as IRecordDetails<TRecord>);
     }
   }
 
@@ -49,6 +40,22 @@ export class Table<TRecord extends IRecord<IdType>> implements ITable<TRecord> {
 
   update(): void {
     throw new Error("Method not implemented.");
+  }
+
+  private insertRecords(recordDetails: IRecordDetails<TRecord>[]): TRecord[] {
+    const newRecords: TRecord[] = [];
+    recordDetails.forEach((recordDetails) => {
+      const newRecord = this.createRecord(recordDetails);
+      newRecords.push(newRecord);
+    });
+    this.storage.append(newRecords);
+    return newRecords;
+  }
+
+  private insertRecord(recordDetails: IRecordDetails<TRecord>): TRecord {
+    const newRecord = this.createRecord(recordDetails);
+    this.storage.append(newRecord);
+    return newRecord;
   }
 
   private createTechnicalProps(): IRecord<IdType> {
