@@ -7,6 +7,7 @@ import { IStorage } from "../storage/IStorage";
 import { IdType } from "../types/IdType";
 import { ITable } from "./ITable";
 import { ITableConfig } from "./ITableConfig";
+import { IUpdateResult } from "./IUpdateResult";
 
 /**
  * This class represents each type of table.
@@ -53,12 +54,15 @@ export class Table<TRecord extends IRecord<IdType>> implements ITable<TRecord> {
     record: IRecordDetails<TRecord>,
     filter?: IFilter<TRecord> | undefined
   ): number {
-    const count = this.update(record, filter);
-    if (count === 0) {
+    const updateResult = this.update(record, filter);
+
+    // only insert a new entry, if we no entry was found.
+    // Return 0 in case an entry was found but not updated, because the props already were up to date
+    if (updateResult.numberFindings === 0) {
       this.insert(record);
       return 1;
     }
-    return count;
+    return updateResult.numberChanges;
   }
 
   select(filter?: IFilter<TRecord> | undefined): TRecord[] {
@@ -76,20 +80,21 @@ export class Table<TRecord extends IRecord<IdType>> implements ITable<TRecord> {
   update(
     record: Partial<IRecordDetails<TRecord>>,
     filter?: IFilter<TRecord> | undefined
-  ): number {
-    let count = 0;
+  ): IUpdateResult {
+    const updateResult: IUpdateResult = { numberChanges: 0, numberFindings: 0 };
     const records = this.select();
     records.forEach((updateRecord) => {
       if (!filter || RecordUtils.doesMatchFilter(updateRecord, filter)) {
+        updateResult.numberFindings++;
         if (RecordUtils.updateItem(updateRecord, record, this.tableConfig)) {
-          count++;
+          updateResult.numberChanges++;
         }
       }
     });
-    if (count > 0) {
+    if (updateResult.numberChanges > 0) {
       this.storage.write(records);
     }
-    return count;
+    return updateResult;
   }
 
   private insertRecords(recordDetails: IRecordDetails<TRecord>[]): TRecord[] {
