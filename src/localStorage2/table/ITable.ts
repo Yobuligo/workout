@@ -3,7 +3,7 @@ import { IRecord } from "../record/IRecord";
 import { IRecordDetails } from "../record/IRecordDetails";
 
 /**
- * An implementation of this interface represents a table.
+ * An implementation of this interface represents a table which can have data of type {@link TRecord}.
  */
 export interface ITable<TRecord extends IRecord<any>> {
   readonly name: string;

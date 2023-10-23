@@ -1,4 +1,3 @@
-import { IDataAccessObjectMeta } from "../dataAccessObject/IDataAccessObjectMeta";
 import { readLocalStorage } from "../utils/readLocalStorage";
 import { writeLocalStorage } from "../utils/writeLocalStorage";
 import { IAutoIncrement } from "./IAutoIncrement";
