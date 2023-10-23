@@ -1,3 +1,4 @@
+import { IFilter } from "../filter/IFilter";
 import { IIdGenerator } from "../idGenerator/IIdGenerator";
 import { IRecord } from "../record/IRecord";
 import { IRecordDetails } from "../record/IRecordDetails";
@@ -20,8 +21,18 @@ export class Table<TRecord extends IRecord<IdType>> implements ITable<TRecord> {
     return records.length;
   }
 
-  delete(): void {
-    this.storage.write([]);
+  delete(filter?: IFilter<TRecord> | undefined): void {
+    if (!filter) {
+      this.storage.write([]);
+      return;
+    }
+
+    let records = this.select();
+    const length = records.length;
+    if (length > 0) {
+      records = RecordUtils.reduceRecords(records, filter);
+      this.storage.write(records);
+    }
   }
 
   insert(record: IRecordDetails<TRecord>): TRecord;
@@ -34,12 +45,29 @@ export class Table<TRecord extends IRecord<IdType>> implements ITable<TRecord> {
     }
   }
 
-  select(): TRecord[] {
-    return this.storage.read();
+  select(filter?: IFilter<TRecord> | undefined): TRecord[] {
+    let records = this.storage.read();
+    if (filter) {
+      records = RecordUtils.filterItems(records, filter);
+    }
+    return records;
   }
 
-  update(): void {
-    throw new Error("Method not implemented.");
+  update(
+    record: Partial<IRecordDetails<TRecord>>,
+    filter?: IFilter<TRecord> | undefined
+  ): number {
+    let count = 0;
+    const records = this.select();
+    records.forEach((updateRecord) => {
+      if (!filter || RecordUtils.doesMatchFilter(updateRecord, filter)) {
+        if (RecordUtils.updateItem(updateRecord, record, this.tableConfig)) {
+          count++;
+        }
+      }
+    });
+    this.storage.write(records);
+    return count;
   }
 
   private insertRecords(recordDetails: IRecordDetails<TRecord>[]): TRecord[] {

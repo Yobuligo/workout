@@ -1,3 +1,4 @@
+import { IFilter } from "../filter/IFilter";
 import { IRecord } from "../record/IRecord";
 import { IRecordDetails } from "../record/IRecordDetails";
 
@@ -7,9 +8,12 @@ import { IRecordDetails } from "../record/IRecordDetails";
 export interface ITable<TRecord extends IRecord<any>> {
   readonly name: string;
   count(): number;
-  delete(): void;
+  delete(filter?: IFilter<TRecord>): void;
   insert(record: IRecordDetails<TRecord>): TRecord;
   insert(records: IRecordDetails<TRecord>[]): TRecord[];
-  select(): TRecord[];
-  update(): void;
+  select(filter?: IFilter<TRecord>): TRecord[];
+  update(
+    record: Partial<IRecordDetails<TRecord>>,
+    filter?: IFilter<TRecord>
+  ): number;
 }
