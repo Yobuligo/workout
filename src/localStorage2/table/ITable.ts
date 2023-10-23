@@ -12,6 +12,7 @@ export interface ITable<TRecord extends IRecord<any>> {
   insert(record: IRecordDetails<TRecord>): TRecord;
   insert(records: IRecordDetails<TRecord>[]): TRecord[];
   select(filter?: IFilter<TRecord>): TRecord[];
+  selectSingle(filter?: IFilter<TRecord>): TRecord | undefined;
   update(
     record: Partial<IRecordDetails<TRecord>>,
     filter?: IFilter<TRecord>

@@ -57,6 +57,10 @@ export class Table<TRecord extends IRecord<IdType>> implements ITable<TRecord> {
     return records;
   }
 
+  selectSingle(filter?: IFilter<TRecord> | undefined): TRecord | undefined {
+    return this.select(filter)[0];
+  }
+
   update(
     record: Partial<IRecordDetails<TRecord>>,
     filter?: IFilter<TRecord> | undefined
