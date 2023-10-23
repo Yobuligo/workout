@@ -11,7 +11,11 @@ export interface IDatabase {
     name: string,
     config?: ITableConfig
   ): ITable<T>;
-  delete(name: string): boolean;
+
+  /**
+   * Drops the table with the given {@link name}
+   */
+  drop(name: string): boolean;
   readonly fileName: string;
   readonly name: string;
   readonly tables: ITable<any>[];

@@ -1,24 +1,29 @@
+import { IStorage } from "../storage/IStorage";
 import { IRecord } from "../types/IRecord";
 import { IdType } from "../types/IdType";
 import { ITable } from "./ITable";
 
 export class Table<TRecord extends IRecord<IdType>> implements ITable<TRecord> {
-  constructor(readonly name: string) {}
+  constructor(
+    readonly name: string,
+    private readonly storage: IStorage<TRecord>
+  ) {}
 
   count(): number {
-    throw new Error("Method not implemented.");
+    const items = this.select();
+    return items.length;
   }
 
-  delete(): boolean {
-    throw new Error("Method not implemented.");
+  delete(): void {
+    this.storage.write([]);
   }
 
   insert(row: TRecord): void {
-    throw new Error("Method not implemented.");
+
   }
 
   select(): TRecord[] {
-    throw new Error("Method not implemented.");
+    return this.storage.read();
   }
 
   update(): void {

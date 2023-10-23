@@ -6,7 +6,7 @@ import { IRecord } from "../types/IRecord";
 export interface ITable<TRecord extends IRecord<any>> {
   readonly name: string;
   count(): number;
-  delete(): boolean;
+  delete(): void;
   insert(row: TRecord): void;
   select(): TRecord[];
   update(): void;
