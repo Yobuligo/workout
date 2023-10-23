@@ -8,12 +8,16 @@ import { IdType } from "../types/IdType";
 import { ITable } from "./ITable";
 import { ITableConfig } from "./ITableConfig";
 
+/**
+ * This class represents each type of table.
+ * A table is required to write data into, read or delete data from it.
+ */
 export class Table<TRecord extends IRecord<IdType>> implements ITable<TRecord> {
   constructor(
     readonly name: string,
-    private readonly tableConfig: ITableConfig,
     private readonly storage: IStorage<TRecord>,
-    private readonly idGenerator: IIdGenerator<IdType>
+    private readonly idGenerator: IIdGenerator<IdType>,
+    private readonly tableConfig?: ITableConfig
   ) {}
 
   count(): number {
