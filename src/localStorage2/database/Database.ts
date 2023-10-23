@@ -1,4 +1,4 @@
-import { AutoIncrement } from "../autoIncrement/AutoIncrement";
+import { AutoIncrement } from "../idGenerator/AutoIncrement";
 import { DataAccessObject } from "../dataAccessObject/DataAccessObject";
 import { IDataAccessObject } from "../dataAccessObject/IDataAccessObject";
 import { IDataAccessObjectConfig } from "../dataAccessObject/IDataAccessObjectConfig";

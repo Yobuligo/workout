@@ -1,4 +1,4 @@
-import { IdType } from "./IdType";
+import { IdType } from "../types/IdType";
 
 /**
  * An implementation of this interface represents a row in a table.

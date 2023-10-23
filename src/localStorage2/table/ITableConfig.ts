@@ -3,8 +3,9 @@
  */
 export interface ITableConfig {
   /**
-   * Defines if createdAt and changedAt timestamps are set.
-   * If {@link timestamps} is undefined created and changedAt are automatically set.
+   * Defines if timestamps for createdAt and changedAt are handled by the api.
+   * This means whenever an entry is added or updated the corresponding timestamp is set or updated.
+   * If {@link timestamps} is undefined created and changedAt are also handled automatically.
    */
   timestamps?: boolean;
 }

@@ -1,16 +1,16 @@
 import { ITable } from "../table/ITable";
 import { ITableConfig } from "../table/ITableConfig";
-import { IRecord } from "../types/IRecord";
+import { IRecord } from "../record/IRecord";
 import { IdType } from "../types/IdType";
 
 /**
  * An implementation of this interface represents a database.
  */
 export interface IDatabase {
-  define<T extends IRecord<IdType>>(
+  define<TRecord extends IRecord<IdType>>(
     name: string,
     config?: ITableConfig
-  ): ITable<T>;
+  ): ITable<TRecord>;
 
   /**
    * Drops the table with the given {@link name}
