@@ -4,10 +4,10 @@ import { ITableMeta } from "./ITableMeta";
 import { Table } from "./Table";
 
 /**
- * This class represents the table which handles the meta information of the tables.
+ * This class represents a table which handles meta information of tables.
  */
 export class MetaTable extends Table<ITableMeta> {
   constructor(tableName: string, storage: IStorage<ITableMeta>) {
-    super(`db.${tableName}`, storage, new UUIDGenerator());
+    super(tableName, storage, new UUIDGenerator());
   }
 }

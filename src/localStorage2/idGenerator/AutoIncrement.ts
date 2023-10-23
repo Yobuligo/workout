@@ -1,3 +1,4 @@
+import { MetaTable } from "../table/MetaTable";
 import { readLocalStorage } from "../utils/readLocalStorage";
 import { writeLocalStorage } from "../utils/writeLocalStorage";
 import { IAutoIncrement } from "./IAutoIncrement";
@@ -6,7 +7,7 @@ export class AutoIncrement implements IAutoIncrement {
   private value: number = 0;
 
   constructor(
-    private readonly databaseFileName: string,
+    private readonly metaTable: MetaTable,
     private readonly tableName: string
   ) {
     this.value = this.readAutoIncrement();

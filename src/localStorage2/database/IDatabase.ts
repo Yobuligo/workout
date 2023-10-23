@@ -1,6 +1,6 @@
+import { IRecord } from "../record/IRecord";
 import { ITable } from "../table/ITable";
 import { ITableConfig } from "../table/ITableConfig";
-import { IRecord } from "../record/IRecord";
 import { IdType } from "../types/IdType";
 
 /**
@@ -8,15 +8,13 @@ import { IdType } from "../types/IdType";
  */
 export interface IDatabase {
   define<TRecord extends IRecord<IdType>>(
-    name: string,
+    tableName: string,
     config?: ITableConfig
   ): ITable<TRecord>;
 
   /**
-   * Drops the table with the given {@link name}
+   * Drops the table with the given {@link tableName}
    */
-  drop(name: string): boolean;
-  readonly fileName: string;
-  readonly name: string;
-  readonly tables: ITable<any>[];
+  drop(tableName: string): boolean;
+  readonly databaseName: string;
 }
