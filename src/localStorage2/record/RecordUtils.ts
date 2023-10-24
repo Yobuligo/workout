@@ -1,4 +1,4 @@
-import { IFilter } from "../filter/IFilter";
+import { IWhere } from "../where/IWhere";
 import { IIdGenerator } from "../idGenerator/IIdGenerator";
 import { ITableConfig } from "../table/ITableConfig";
 import { IdType } from "../types/IdType";
@@ -8,10 +8,10 @@ import { IRecord } from "./IRecord";
 class RecordUtilsDefault {
   doesMatchFilter<T extends IRecord<IdType>>(
     record: T,
-    filter: IFilter<T>
+    where: IWhere<T>
   ): boolean {
-    for (const key in filter) {
-      const predicate = filter[key] ?? error();
+    for (const key in where) {
+      const predicate = where[key] ?? error();
       if (!predicate(record[key])) {
         return false;
       }
@@ -35,13 +35,13 @@ class RecordUtilsDefault {
   }
 
   /**
-   * Returns a list of records from the given {@link records} which match the given {@link filter}.
+   * Returns a list of records from the given {@link records} which match the given {@link where}.
    */
   filterItems<T extends IRecord<IdType>>(
     records: T[],
-    filter: IFilter<T>
+    where: IWhere<T>
   ): T[] {
-    return records.filter((item) => this.doesMatchFilter(item, filter));
+    return records.filter((item) => this.doesMatchFilter(item, where));
   }
 
   /**
@@ -57,7 +57,7 @@ class RecordUtilsDefault {
 
   /**
    * Reduces the given {@link records} by all entries,
-   * which are matching the given {@link filter} and returning the result list.
+   * which are matching the given {@link where} and returning the result list.
    *
    * @example
    * const result = reduceRecords(
@@ -73,9 +73,9 @@ class RecordUtilsDefault {
    */
   reduceRecords<T extends IRecord<IdType>>(
     records: T[],
-    filter: IFilter<T>
+    where: IWhere<T>
   ): T[] {
-    return records.filter((record) => !this.doesMatchFilter(record, filter));
+    return records.filter((record) => !this.doesMatchFilter(record, where));
   }
 
   /**

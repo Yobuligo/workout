@@ -1,6 +1,6 @@
-import { IFilter } from "../filter/IFilter";
 import { IRecord } from "../record/IRecord";
 import { IRecordDetails } from "../record/IRecordDetails";
+import { IWhere } from "../where/IWhere";
 import { IUpdateResult } from "./IUpdateResult";
 
 /**
@@ -9,14 +9,14 @@ import { IUpdateResult } from "./IUpdateResult";
 export interface ITable<TRecord extends IRecord<any>> {
   readonly name: string;
   count(): number;
-  delete(filter?: IFilter<TRecord>): void;
+  delete(where?: IWhere<TRecord>): void;
   insert(record: IRecordDetails<TRecord>): TRecord;
   insert(records: IRecordDetails<TRecord>[]): TRecord[];
-  modify(record: IRecordDetails<TRecord>, filter?: IFilter<TRecord>): number;
-  select(filter?: IFilter<TRecord>): TRecord[];
-  selectSingle(filter?: IFilter<TRecord>): TRecord | undefined;
+  modify(record: IRecordDetails<TRecord>, where?: IWhere<TRecord>): number;
+  select(where?: IWhere<TRecord>): TRecord[];
+  selectSingle(where?: IWhere<TRecord>): TRecord | undefined;
   update(
     record: Partial<IRecordDetails<TRecord>>,
-    filter?: IFilter<TRecord>
+    where?: IWhere<TRecord>
   ): IUpdateResult;
 }

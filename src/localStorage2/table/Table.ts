@@ -1,10 +1,10 @@
-import { IFilter } from "../filter/IFilter";
 import { IIdGenerator } from "../idGenerator/IIdGenerator";
 import { IRecord } from "../record/IRecord";
 import { IRecordDetails } from "../record/IRecordDetails";
 import { RecordUtils } from "../record/RecordUtils";
 import { IStorage } from "../storage/IStorage";
 import { IdType } from "../types/IdType";
+import { IWhere } from "../where/IWhere";
 import { ITable } from "./ITable";
 import { ITableConfig } from "./ITableConfig";
 import { IUpdateResult } from "./IUpdateResult";
@@ -26,8 +26,8 @@ export class Table<TRecord extends IRecord<IdType>> implements ITable<TRecord> {
     return records.length;
   }
 
-  delete(filter?: IFilter<TRecord> | undefined): void {
-    if (!filter) {
+  delete(where?: IWhere<TRecord> | undefined): void {
+    if (!where) {
       this.storage.write([]);
       return;
     }
@@ -35,7 +35,7 @@ export class Table<TRecord extends IRecord<IdType>> implements ITable<TRecord> {
     let records = this.select();
     const length = records.length;
     if (length > 0) {
-      records = RecordUtils.reduceRecords(records, filter);
+      records = RecordUtils.reduceRecords(records, where);
       this.storage.write(records);
     }
   }
@@ -52,9 +52,9 @@ export class Table<TRecord extends IRecord<IdType>> implements ITable<TRecord> {
 
   modify(
     record: IRecordDetails<TRecord>,
-    filter?: IFilter<TRecord> | undefined
+    where?: IWhere<TRecord> | undefined
   ): number {
-    const updateResult = this.update(record, filter);
+    const updateResult = this.update(record, where);
 
     // only insert a new entry, if we no entry was found.
     // Return 0 in case an entry was found but not updated, because the props already were up to date
@@ -65,26 +65,26 @@ export class Table<TRecord extends IRecord<IdType>> implements ITable<TRecord> {
     return updateResult.numberChanges;
   }
 
-  select(filter?: IFilter<TRecord> | undefined): TRecord[] {
+  select(where?: IWhere<TRecord> | undefined): TRecord[] {
     let records = this.storage.read();
-    if (filter) {
-      records = RecordUtils.filterItems(records, filter);
+    if (where) {
+      records = RecordUtils.filterItems(records, where);
     }
     return records;
   }
 
-  selectSingle(filter?: IFilter<TRecord> | undefined): TRecord | undefined {
-    return this.select(filter)[0];
+  selectSingle(where?: IWhere<TRecord> | undefined): TRecord | undefined {
+    return this.select(where)[0];
   }
 
   update(
     record: Partial<IRecordDetails<TRecord>>,
-    filter?: IFilter<TRecord> | undefined
+    where?: IWhere<TRecord> | undefined
   ): IUpdateResult {
     const updateResult: IUpdateResult = { numberChanges: 0, numberFindings: 0 };
     const records = this.select();
     records.forEach((updateRecord) => {
-      if (!filter || RecordUtils.doesMatchFilter(updateRecord, filter)) {
+      if (!where || RecordUtils.doesMatchFilter(updateRecord, where)) {
         updateResult.numberFindings++;
         if (RecordUtils.updateItem(updateRecord, record, this.tableConfig)) {
           updateResult.numberChanges++;

@@ -1,4 +1,4 @@
-import { eq } from "../filter/Operator";
+import { eq } from "../where/Operator";
 import { MetaTable } from "../table/MetaTable";
 import { IAutoIncrement } from "./IAutoIncrement";
 
