@@ -3,8 +3,6 @@ import { IStorage } from "./IStorage";
 export class MemoryStorage<T> implements IStorage<T> {
   private data: T[] = [];
 
-  constructor(private readonly key: string) {}
-
   append(item: T): void;
   append(items: T[]): void;
   append(items: unknown): void {
