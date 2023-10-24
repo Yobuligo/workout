@@ -1,5 +1,6 @@
 import { IRecord } from "../record/IRecord";
 import { IRecordDetails } from "../record/IRecordDetails";
+import { ISelectOptions } from "../select/ISelectOptions";
 import { IdType } from "../types/IdType";
 import { IWhere } from "../where/IWhere";
 import { IUpdateResult } from "./IUpdateResult";
@@ -14,8 +15,7 @@ export interface ITable<TRecord extends IRecord<IdType>> {
   insert(record: IRecordDetails<TRecord>): TRecord;
   insert(records: IRecordDetails<TRecord>[]): TRecord[];
   modify(record: IRecordDetails<TRecord>, where?: IWhere<TRecord>): number;
-  select(where?: IWhere<TRecord>): TRecord[];
-  selectSingle(where?: IWhere<TRecord>): TRecord | undefined;
+  select(options?: ISelectOptions<TRecord>): TRecord[];
   update(
     record: Partial<IRecordDetails<TRecord>>,
     where?: IWhere<TRecord>

@@ -1,8 +1,8 @@
-import { IWhere } from "../where/IWhere";
 import { IIdGenerator } from "../idGenerator/IIdGenerator";
 import { ITableConfig } from "../table/ITableConfig";
 import { IdType } from "../types/IdType";
 import { error } from "../utils/error/error";
+import { IWhere } from "../where/IWhere";
 import { IRecord } from "./IRecord";
 
 class RecordUtilsDefault {
@@ -11,9 +11,17 @@ class RecordUtilsDefault {
     where: IWhere<T>
   ): boolean {
     for (const key in where) {
+      // predicate can be a value of type T[key] or a IPredicate function.
+      // E.g. where id = 123 or where id = gt(123)
       const predicate = where[key] ?? error();
-      if (!predicate(record[key])) {
-        return false;
+      if (typeof predicate === "function") {
+        if (!predicate(record[key])) {
+          return false;
+        }
+      } else {
+        if (record[key] !== predicate) {
+          return false;
+        }
       }
     }
     return true;
@@ -37,10 +45,7 @@ class RecordUtilsDefault {
   /**
    * Returns a list of records from the given {@link records} which match the given {@link where}.
    */
-  filterItems<T extends IRecord<IdType>>(
-    records: T[],
-    where: IWhere<T>
-  ): T[] {
+  filterItems<T extends IRecord<IdType>>(records: T[], where: IWhere<T>): T[] {
     return records.filter((item) => this.doesMatchFilter(item, where));
   }
 

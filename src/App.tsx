@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import "./App.css";
 import { TodoList } from "./feature/TodoList";
 import { IDataObjectDetails } from "./localStorage/dataObject/IDataObjectDetails";
-import { ITodo } from "./model/ITodo";
 import { Database } from "./localStorage2/database/Database";
 import { IRecord } from "./localStorage2/record/IRecord";
-import { eq } from "./localStorage/filter/Operator";
+import { gt } from "./localStorage2/where/Operator";
+import { ITodo } from "./model/ITodo";
 
 interface IBoard extends IRecord<number> {
   title: string;
@@ -22,10 +22,13 @@ const App: React.FC = () => {
     // setTodos((previous) => [...previous, newTodo]);
     const count = Board.count();
     Board.insert({ title: "Sprint Review 2" });
-    // const boards =    Board.select({title: eq("Sprint Review 2")})
-    // Board.delete({title: eq("Sprint Review 2 updated")})
-    // Board.delete()
-    const board = Board.selectSingle();
+    Board.insert({ title: "Sprint Review 2" });
+    Board.insert({ title: "Sprint Review 2" });
+    Board.insert({ title: "Sprint Review 2" });
+    Board.insert({ title: "Sprint Review 2" });
+    Board.insert({ title: "Sprint Review 2" });
+
+    const boards = Board.select({ limit: 2, where: { id: gt(3) } });
 
     debugger;
   };

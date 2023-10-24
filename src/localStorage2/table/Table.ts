@@ -2,6 +2,7 @@ import { IIdGenerator } from "../idGenerator/IIdGenerator";
 import { IRecord } from "../record/IRecord";
 import { IRecordDetails } from "../record/IRecordDetails";
 import { RecordUtils } from "../record/RecordUtils";
+import { ISelectOptions } from "../select/ISelectOptions";
 import { IStorage } from "../storage/IStorage";
 import { IdType } from "../types/IdType";
 import { IWhere } from "../where/IWhere";
@@ -65,16 +66,16 @@ export class Table<TRecord extends IRecord<IdType>> implements ITable<TRecord> {
     return updateResult.numberChanges;
   }
 
-  select(where?: IWhere<TRecord> | undefined): TRecord[] {
+  select(options?: ISelectOptions<TRecord>): TRecord[] {
     let records = this.storage.read();
-    if (where) {
-      records = RecordUtils.filterItems(records, where);
+    if (options && options.where) {
+      records = RecordUtils.filterItems(records, options.where);
+    }
+
+    if (options && options.limit !== undefined) {
+      records = records.slice(0, options.limit);
     }
     return records;
-  }
-
-  selectSingle(where?: IWhere<TRecord> | undefined): TRecord | undefined {
-    return this.select(where)[0];
   }
 
   update(
